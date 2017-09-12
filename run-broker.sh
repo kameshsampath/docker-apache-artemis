@@ -38,6 +38,10 @@ load_env() {
   if [ -f "${script_dir}/${run_env_sh}" ]; then
     source "${script_dir}/${run_env_sh}"
   fi
+
+  if [ -f "${script_dir}/${container-limits}" ]; then
+    source "${script_dir}/${container-limits}"
+  fi
 }
 
 # Check for standard /opt/run-java-options first, fallback to run-java-options in the path if not existing
@@ -80,7 +84,7 @@ startup() {
 
   # Update JAVA_ARGS in artemis profile
   if [ "${JAVA_ARGS}x" != "x" ]; then
-    sed -i "s/^JAVA_ARGS=.*$/JAVA_ARGS=${JAVA_ARGS}/" ${BROKERS_HOME}/${BROKER_NAME}/etc/artemis.profile
+    sed -i "s/^JAVA_ARGS=.*$/JAVA_ARGS=\"${JAVA_ARGS}\"/" ${BROKERS_HOME}/${BROKER_NAME}/etc/artemis.profile
   fi
 
   exec ${BROKERS_HOME}/${BROKER_NAME}/bin/artemis run $*
