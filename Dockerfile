@@ -20,6 +20,8 @@ RUN  yum -y install wget curl \
      gpg --import KEYS && \
      gpg apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc && \
      tar xfz apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz && \
+     wget -q https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/1.5.4/hawtio-default-1.5.4.war && \
+     mv hawtio-default-1.5.4.war apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/web/hawtio.war  && \
      mkdir -p /opt/brokers &&  \
      ${ARTEMIS_HOME}/bin/artemis create ${BROKERS_HOME}/${BROKER_NAME} \
        --home ${ARTEMIS_HOME} \
@@ -35,7 +37,8 @@ RUN chmod 755 ${BROKERS_HOME}/run-broker.sh  ${BROKERS_HOME}/java-default-option
     && usermod -g root -G `id -g jboss` jboss \
     && chmod -R "g+rwX" ${BROKERS_HOME} \
     && chown -R jboss:root ${BROKERS_HOME} \
-    && sed -i 's/localhost/0.0.0.0/g' ${BROKERS_HOME}/${BROKER_NAME}/etc/bootstrap.xml
+    && sed -i 's/localhost/0.0.0.0/g' ${BROKERS_HOME}/${BROKER_NAME}/etc/bootstrap.xml \
+    && sed -i -e '/jolokia.war/ a <app url="hawtio" war="hawtio.war"/>' ${BROKERS_HOME}/${BROKER_NAME}/etc/bootstrap.xml
 
 
 EXPOSE 8161 61616 5445 5672 1883 61613
